@@ -79,7 +79,7 @@
   .gauge-score-text{text-align:center;margin-top:10px;margin-bottom:16px}
   .gauge-number{font-size:50px;font-weight:800;letter-spacing:-2px;line-height:1}
   .gauge-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
-  .zone-panic{color:var(--panic)}.zone-fear{color:var(--fear)}.zone-neutral{color:var(--neutral)}.zone-greed{color:var(--greed)}.zone-euphoria{color:var(--euphoria)}
+  .zone-panic{color:var(--panic)}.zone-fear{color:var(--fear)}.zone-neutral{color:var(--neutral)}.zone-opt-mod{color:#60a5fa}.zone-greed{color:var(--greed)}.zone-euphoria{color:var(--euphoria)}
 
   /* ── PILLARS ── */
   .pillars{display:flex;flex-direction:column;gap:9px}
@@ -242,7 +242,7 @@
       <div class="pillars">
         <div class="pillar"><div class="pillar-name">Volatilité (VIX)</div><div class="pillar-bar-wrap"><div class="pillar-bar" id="bar-us-0"></div></div><div class="pillar-val" id="val-us-0">—</div></div>
         <div class="pillar"><div class="pillar-name">Sentiment (Put/Call)</div><div class="pillar-bar-wrap"><div class="pillar-bar" id="bar-us-1"></div></div><div class="pillar-val" id="val-us-1">—</div></div>
-        <div class="pillar"><div class="pillar-name">Breadth (S&amp;P/MA200)</div><div class="pillar-bar-wrap"><div class="pillar-bar" id="bar-us-2"></div></div><div class="pillar-val" id="val-us-2">—</div></div>
+        <div class="pillar"><div class="pillar-name">Breadth (% >MA50)</div><div class="pillar-bar-wrap"><div class="pillar-bar" id="bar-us-2"></div></div><div class="pillar-val" id="val-us-2">—</div></div>
         <div class="pillar"><div class="pillar-name">Stress crédit (HY)</div><div class="pillar-bar-wrap"><div class="pillar-bar" id="bar-us-3"></div></div><div class="pillar-val" id="val-us-3">—</div></div>
         <div class="pillar"><div class="pillar-name">Momentum (S&amp;P/MA125)</div><div class="pillar-bar-wrap"><div class="pillar-bar" id="bar-us-4"></div></div><div class="pillar-val" id="val-us-4">—</div></div>
       </div>
@@ -303,14 +303,15 @@
     <div class="section-label">Zones du score</div>
     <div class="zone-bar">
       <div style="background:var(--panic)"></div><div style="background:var(--fear)"></div>
-      <div style="background:var(--neutral)"></div><div style="background:var(--greed)"></div>
-      <div style="background:var(--euphoria)"></div>
+      <div style="background:var(--neutral)"></div><div style="background:#60a5fa"></div>
+      <div style="background:var(--greed)"></div><div style="background:var(--euphoria)"></div>
     </div>
-    <div class="zone-labels">
+    <div class="zone-labels" style="font-size:9px">
       <span style="color:var(--panic)">0–20 Panique</span>
-      <span style="color:var(--fear)">20–40 Peur</span>
-      <span style="color:var(--neutral)">40–60 Neutre</span>
-      <span style="color:var(--greed)">60–80 Euphorie</span>
+      <span style="color:var(--fear)">20–35 Peur</span>
+      <span style="color:var(--neutral)">35–50 Prudence</span>
+      <span style="color:#60a5fa">50–65 Optimisme</span>
+      <span style="color:var(--greed)">65–80 Opt. élevé</span>
       <span style="color:var(--euphoria)">80–100 Excès</span>
     </div>
   </div>
@@ -358,8 +359,8 @@
         </div>
         <div class="methodo-card">
           <div class="methodo-card-title">Breadth & Momentum <span class="weight-badge">35%</span></div>
-          <div class="methodo-card-src">Yahoo Finance · ^GSPC · automatique</div>
-          <div class="methodo-card-desc">Position du S&P 500 vs MA200j (breadth, 20%) et MA125j (momentum, 15%). Range : −30% → +30% au-dessus de la MA.</div>
+          <div class="methodo-card-src">Yahoo Finance · $SPXA50R · automatique</div>
+          <div class="methodo-card-desc">% réel des 500 titres du S&P 500 au-dessus de leur MA50 (ticker $SPXA50R, calculé par NYSE). Range : 20% → 80%. Plus précis que la position de l'indice seul. Momentum via S&P vs MA125j.</div>
         </div>
         <div class="methodo-card">
           <div class="methodo-card-title">Stress crédit HY <span class="weight-badge">20%</span></div>
@@ -395,15 +396,6 @@
       </div>
     </div>
 
-    <div class="methodo-section">
-      <h3>Améliorations prévues</h3>
-      <div class="formula-box" style="line-height:2">
-        <strong>iTraxx Main</strong> — remplacer par une source directe (Refinitiv ou scraping Markit).<br>
-        <strong>Breadth réel</strong> — % de titres S&P 500 au-dessus de leur MA50, plutôt que l'indice seul.<br>
-        <strong>Historique partagé</strong> — backend JSON sur GitHub pour que tous les visiteurs voient la même courbe.<br>
-        <strong>Newsletter automatique</strong> — résumé Brevo chaque lundi matin, comme HODLomètre.
-      </div>
-    </div>
   </div>
   <footer>
     <div>© 2025 MarketOmètre · <a href="https://investir.blog" target="_blank">investir.blog</a></div>
@@ -420,7 +412,7 @@
   <div class="page-content" style="max-width:960px">
     <div class="hero-eyebrow" style="margin-bottom:10px">Évolution dans le temps</div>
     <div class="page-title">Historique</div>
-    <div class="page-subtitle">Suivi quotidien des scores depuis la mise en ligne. Les données sont enregistrées automatiquement à chaque visite dans votre navigateur.</div>
+    <div class="page-subtitle">Suivi quotidien des scores depuis la mise en ligne. L'historique est partagé entre tous les visiteurs.</div>
 
     <div class="histo-header">
       <div class="section-label" style="margin-bottom:0">Score composite</div>
@@ -449,7 +441,6 @@
       </table>
     </div>
 
-    <div class="note-box" style="margin-top:18px">📌 L'historique est stocké localement dans votre navigateur. Pour une courbe partagée entre tous les visiteurs, une prochaine version utilisera un backend centralisé.</div>
   </div>
   <footer>
     <div>© 2025 MarketOmètre · <a href="https://investir.blog" target="_blank">investir.blog</a></div>
@@ -486,9 +477,9 @@ function toggleMenu(){
 const PROXY='https://corsproxy.io/?';
 const FRED_KEY='96e939128c65bf0f827ccfaa87820026';
 
-function zoneColor(s){return s<20?'var(--panic)':s<40?'var(--fear)':s<60?'var(--neutral)':s<80?'var(--greed)':'var(--euphoria)'}
-function zoneClass(s){return s<20?'zone-panic':s<40?'zone-fear':s<60?'zone-neutral':s<80?'zone-greed':'zone-euphoria'}
-function zoneLabel(s){return s<20?'Panique extrême':s<40?'Peur':s<60?'Neutre':s<80?'Euphorie':'Euphorie extrême'}
+function zoneColor(s){return s<20?'var(--panic)':s<35?'var(--fear)':s<50?'var(--neutral)':s<65?'#60a5fa':s<80?'var(--greed)':'var(--euphoria)'}
+function zoneClass(s){return s<20?'zone-panic':s<35?'zone-fear':s<50?'zone-neutral':s<65?'zone-opt-mod':s<80?'zone-greed':'zone-euphoria'}
+function zoneLabel(s){return s<20?'Panique extrême':s<35?'Peur':s<50?'Prudence':s<65?'Optimisme modéré':s<80?'Optimisme élevé':'Excès d\'optimisme'}
 function clamp(v,a=0,b=100){return Math.max(a,Math.min(b,v))}
 function normalize(v,lo,hi,inv=false){let p=(v-lo)/(hi-lo)*100;if(inv)p=100-p;return clamp(p)}
 
@@ -497,6 +488,7 @@ const scoreVstoxx = v  => normalize(v,   10,  45,  true);
 const scorePutCall= pc => normalize(pc,  0.4, 1.2, true);
 const scoreHY     = s  => normalize(s,   2,   10,  true);
 const scoreMom    = p  => normalize(p,  -30,  30);
+const scoreBreadth= b  => normalize(b,   20,  80);   // % titres > MA50, range 20→80
 // ZEW Economic Sentiment: −100 (pessimiste) → +100 (optimiste), publié mensuellement
 const scoreZEW    = z  => normalize(z,  -60,  80);
 
@@ -539,6 +531,30 @@ async function yahooMA(sym,days){
   const ma=slice.reduce((a,b)=>a+b,0)/slice.length;
   return{latest,ma,pct:(latest-ma)/ma*100};
 }
+// $SPXA50R = % des 500 titres S&P au-dessus de leur MA50 (calculé par NYSE, sur Yahoo Finance)
+async function fetchBreadthUS(){
+  const v=await yahooLatest('%24SPXA50R');
+  return isNaN(v)?50:v; // déjà en %, ex: 62.4 = 62.4%
+}
+
+// ── HISTORIQUE GITHUB (lecture publique, pas d'auth) ──
+const GH_RAW='https://raw.githubusercontent.com/Investirblog/marketometre/main/history.json';
+async function fetchSharedHistory(){
+  const r=await fetch(GH_RAW+'?t='+Date.now()); // cache-bust
+  if(!r.ok) return [];
+  return await r.json();
+}
+
+// Écriture via Netlify Function /api/save-history (POST)
+async function pushToHistory(entry){
+  try{
+    await fetch('/api/save-history',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(entry)
+    });
+  }catch(e){console.warn('[MO] push history failed:',e.message)}
+}
 
 // ── UI ──
 function setGauge(prefix,score){
@@ -579,14 +595,15 @@ async function load(){
   document.getElementById('date-badge').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   document.getElementById('update-time').textContent=now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+' à '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
 
-  const [vix,hySpread,putCall,spData,vstoxx,sx5eData,zew]=await Promise.all([
+  const [vix,hySpread,putCall,spData,vstoxx,sx5eData,zew,breadthUS]=await Promise.all([
     safe(()=>fredLatest('VIXCLS'),          22,   'VIX'),
     safe(()=>fredLatest('BAMLH0A0HYM2'),    4.5,  'HY Spread'),
     safe(()=>fetchPutCall(),                0.70, 'Put/Call CBOE'),
-    safe(()=>yahooMA('^GSPC',200),          {latest:5200,ma:5000,pct:4},'SP500'),
+    safe(()=>yahooMA('^GSPC',125),          {latest:5200,ma:5000,pct:4},'SP500'),
     safe(()=>yahooLatest('^V2TX'),          22,   'VSTOXX'),
-    safe(()=>yahooMA('^STOXX50E',200),      {latest:4900,ma:4750,pct:3},'Eurostoxx'),
+    safe(()=>yahooMA('^STOXX50E',125),      {latest:4900,ma:4750,pct:3},'Eurostoxx'),
     safe(()=>fredLatest('ZEWSELMU'),        0,    'ZEW Sentiment'),
+    safe(()=>fetchBreadthUS(),              50,   'Breadth SPXA50R'),
   ]);
 
   // Bannière seulement si une source PRIMAIRE a vraiment échoué
@@ -595,8 +612,8 @@ async function load(){
 
   const iTraxxProxy=vstoxx*0.18;
 
-  // US
-  const us0=scoreVix(vix),us1=scorePutCall(putCall),us2=scoreMom(spData.pct),us3=scoreHY(hySpread),us4=scoreMom(spData.pct);
+  // US — breadth réel via $SPXA50R (% titres > MA50)
+  const us0=scoreVix(vix),us1=scorePutCall(putCall),us2=scoreBreadth(breadthUS),us3=scoreHY(hySpread),us4=scoreMom(spData.pct);
   const scoreUS=clamp(us0*.25+us1*.20+us2*.20+us3*.20+us4*.15);
 
   // EU — sentiment eu1 = ZEW (mensuel, FRED) au lieu du proxy VSTOXX
@@ -625,23 +642,25 @@ async function load(){
   $('kpi-hy').className='trend-card-value '+zoneClass(us3);
   $('kpi-hy-sub').textContent=hySpread>5?'⚠ Spreads élevés':'✓ Spreads contenus';
 
-  // Historique
-  saveToHistory(now,scoreUS,scoreEU,vix,vstoxx,hySpread,putCall);
+  // Historique partagé GitHub
+  const dateStr=now.toISOString().slice(0,10);
+  await pushToHistory({
+    date:dateStr,
+    scoreUS:Math.round(scoreUS),scoreEU:Math.round(scoreEU),
+    vix:vix.toFixed(1),vstoxx:vstoxx.toFixed(1),
+    hy:hySpread.toFixed(2),pc:putCall.toFixed(2),
+    breadth:breadthUS.toFixed(1),zew:zew.toFixed(1)
+  });
 }
 
 // ── HISTORIQUE ──
-const STORAGE_KEY='marketometre_v2_history';
-function saveToHistory(date,scoreUS,scoreEU,vix,vstoxx,hy,pc){
-  if(isNaN(scoreUS)||isNaN(scoreEU)) return;
-  const dateStr=date.toISOString().slice(0,10);
-  let h=getHistory().filter(e=>e.date!==dateStr);
-  h.push({date:dateStr,scoreUS:Math.round(scoreUS),scoreEU:Math.round(scoreEU),
-    vix:vix.toFixed(1),vstoxx:vstoxx.toFixed(1),hy:hy.toFixed(2),pc:pc.toFixed(2)});
-  if(h.length>365) h=h.slice(-365);
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(h))}catch(e){}
-}
-function getHistory(){
-  try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch(e){return[]}
+async function getHistory(){
+  try{
+    const shared=await fetchSharedHistory();
+    if(shared.length>0) return shared;
+  }catch(e){}
+  // fallback localStorage si GitHub indisponible
+  try{return JSON.parse(localStorage.getItem('marketometre_v2_history')||'[]')}catch(e){return[]}
 }
 
 let currentRange=30;
@@ -654,8 +673,9 @@ function setRange(n,btn){
   renderHistorique();
 }
 
-function renderHistorique(){
-  const history=getHistory().slice(-currentRange);
+async function renderHistorique(){
+  const allHistory=await getHistory();
+  const history=allHistory.slice(-currentRange);
   const tbody=document.getElementById('histo-tbody');
 
   if(history.length===0){
