@@ -1,0 +1,7 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[scheduled-functions]]
+  name = "telegram-alert"
+  cron = "0 8 * * 1-5"
