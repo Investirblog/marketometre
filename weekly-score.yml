@@ -1,0 +1,40 @@
+name: Generate Score Image
+
+on:
+  schedule:
+    # Chaque lundi à 7h00 UTC (9h00 heure belge)
+    - cron: '0 7 * * 1'
+  # Permet aussi de lancer manuellement depuis GitHub → Actions
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install Pillow requests
+
+      - name: Generate score image
+        env:
+          FRED_KEY: ${{ secrets.FRED_KEY }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: python generate_score_image.py
+
+      - name: Commit score.png if changed
+        run: |
+          git config user.name  "MarketOmetre Bot"
+          git config user.email "bot@marketometre.app"
+          git add score.png
+          git diff --cached --quiet || git commit -m "chore: score image $(date +%Y-%m-%d)"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
