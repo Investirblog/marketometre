@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarketOmètre — Indice de Peur & Euphorie</title>
+<meta name="description" content="Score composite 0-100 agrégeant volatilité, sentiment, breadth et stress de crédit pour les marchés américains et européens. Mis à jour quotidiennement.">
+<!-- Open Graph -->
+<meta property="og:title" content="MarketOmètre — Indice de Peur & Euphorie">
+<meta property="og:description" content="Score composite 0-100 pour les marchés US et européens. Volatilité, sentiment Put/Call, breadth réel, stress de crédit HY et ZEW Sentiment.">
+<meta property="og:image" content="https://marketometre.netlify.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://marketometre.netlify.app">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MarketOmètre — Indice de Peur & Euphorie">
+<meta name="twitter:description" content="Score composite 0-100 pour les marchés US et européens. Gratuit, mis à jour quotidiennement.">
+<meta name="twitter:image" content="https://marketometre.netlify.app/og-image.png">
+<meta name="twitter:site" content="@TransactionB">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -146,6 +162,21 @@
   footer a:hover{color:var(--text)}
 
   @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ── KO-FI BUTTON ── */
+  .kofi-btn{
+    position:fixed;bottom:24px;right:24px;z-index:500;
+    display:flex;align-items:center;gap:8px;
+    background:#FF5E5B;color:#fff;
+    font-family:'Open Sans',sans-serif;font-size:13px;font-weight:700;
+    padding:10px 16px;border-radius:50px;
+    text-decoration:none;
+    box-shadow:0 4px 20px rgba(255,94,91,.35);
+    transition:transform .2s,box-shadow .2s;
+    border:none;cursor:pointer;
+  }
+  .kofi-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(255,94,91,.5)}
+  .kofi-btn svg{width:18px;height:18px;flex-shrink:0}
 
   /* ── RESPONSIVE ── */
   @media(max-width:768px){
@@ -734,5 +765,13 @@ async function renderHistorique(){
 
 load();
 </script>
+<!-- ── KO-FI FLOATING BUTTON ── -->
+<a href="https://ko-fi.com/nathanaeldumortier" target="_blank" class="kofi-btn" title="Offrir un café">
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.623.782-.623.782s-.004 7.171-.003 11.237c.002 2.557 2.501 2.907 2.501 2.907h6.114c2.363-.048 3.469-1.547 3.469-1.547a4.226 4.226 0 0 0 4.204 1.547h1.132c2.857-.07 3.904-2.394 3.904-2.394s1.55-1.548 2.255-4.538c.706-2.995.201-2.401.201-2.401zm-6.061 3.511h-1.208v1.083c0 .556-.45 1.006-1.005 1.006-.555 0-1.006-.45-1.006-1.006V12.46H13.39c-.555 0-1.006-.45-1.006-1.006 0-.556.451-1.006 1.006-1.006h1.211V9.365c0-.556.451-1.007 1.006-1.007.555 0 1.005.451 1.005 1.007v1.083h1.208c.555 0 1.006.45 1.006 1.006 0 .555-.451 1.005-1.006 1.005z"/>
+  </svg>
+  Offrir un café
+</a>
+
 </body>
 </html>
