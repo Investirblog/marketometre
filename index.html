@@ -507,8 +507,25 @@ function toggleMenu(){
 }
 
 // ── HELPERS ──
-const PROXY='https://corsproxy.io/?';
 const FRED_KEY='96e939128c65bf0f827ccfaa87820026';
+
+// Proxy CORS fiable avec fallback
+async function proxyFetch(url){
+  // Essai 1 : corsproxy.io
+  try{
+    const r=await fetch('https://corsproxy.io/?'+encodeURIComponent(url),{signal:AbortSignal.timeout(8000)});
+    if(r.ok) return r;
+  }catch(e){}
+  // Essai 2 : allorigins
+  try{
+    const r=await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(8000)});
+    if(r.ok) return r;
+  }catch(e){}
+  // Essai 3 : thingproxy
+  const r=await fetch(`https://thingproxy.freeboard.io/fetch/${url}`,{signal:AbortSignal.timeout(8000)});
+  if(!r.ok) throw new Error(`Proxy failed for ${url}`);
+  return r;
+}
 
 function zoneColor(s){
   if(s<15) return 'var(--panic)';
@@ -560,14 +577,12 @@ async function fredLatest(series){
 
 // ── FETCH CBOE Put/Call (equity CSV, public) ──
 async function fetchPutCall(){
-  // CBOE publie le CSV equity daily : dernière ligne = jour le plus récent
   const url='https://cdn.cboe.com/resources/options/volume_and_call_put_ratios/equitypc.csv';
-  const r=await fetch(PROXY+encodeURIComponent(url));
+  const r=await proxyFetch(url);
   const txt=await r.text();
   const lines=txt.trim().split('\n').filter(l=>l.trim()&&!l.startsWith('Your')&&!l.startsWith(',')&&!l.startsWith('DATE')&&!l.startsWith(' '));
   const last=lines[lines.length-1];
   const parts=last.split(',');
-  // format: DATE,CALL,PUT,TOTAL,P/C Ratio
   const pc=parseFloat(parts[4]);
   return isNaN(pc)?0.7:pc;
 }
@@ -575,7 +590,7 @@ async function fetchPutCall(){
 // ── FETCH YAHOO ──
 async function yahooCloses(sym,range,interval){
   const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=${interval}&includePrePost=false`;
-  const r=await fetch(PROXY+encodeURIComponent(url));
+  const r=await proxyFetch(url);
   const j=await r.json();
   return j.chart.result[0].indicators.quote[0].close.filter(v=>v!=null);
 }
