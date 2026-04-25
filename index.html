@@ -96,7 +96,8 @@
   .gauge-score-text{text-align:center;margin-top:10px;margin-bottom:16px}
   .gauge-number{font-size:50px;font-weight:800;letter-spacing:-2px;line-height:1}
   .gauge-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
-  .zone-panic{color:var(--panic)}.zone-fear{color:var(--fear)}.zone-caution{color:#f59e0b}.zone-neutral{color:var(--muted2)}.zone-opt{color:#60a5fa}.zone-greed{color:var(--greed)}.zone-euphoria{color:var(--euphoria)}
+  /* Vert foncé → vert clair → bleu → gris → ambre → orange → rouge */
+  .zone-panic{color:#16a34a}.zone-fear{color:#84cc16}.zone-caution{color:#60a5fa}.zone-neutral{color:var(--muted2)}.zone-opt{color:#f59e0b}.zone-greed{color:#f97316}.zone-euphoria{color:#ef4444}
 
   /* ── PILLARS ── */
   .pillars{display:flex;flex-direction:column;gap:9px}
@@ -334,19 +335,22 @@
   <div class="zone-legend">
     <div class="section-label">Zones du score</div>
     <div class="zone-bar">
-      <div style="background:var(--panic)"></div><div style="background:var(--fear)"></div>
-      <div style="background:#f59e0b"></div><div style="background:var(--muted2)"></div>
-      <div style="background:#60a5fa"></div><div style="background:var(--greed)"></div>
-      <div style="background:var(--euphoria)"></div>
+      <div style="background:#16a34a"></div>
+      <div style="background:#84cc16"></div>
+      <div style="background:#60a5fa"></div>
+      <div style="background:var(--muted2)"></div>
+      <div style="background:#f59e0b"></div>
+      <div style="background:#f97316"></div>
+      <div style="background:#ef4444"></div>
     </div>
     <div class="zone-labels">
-      <span style="color:var(--panic)">0–15 · Panique 🟢</span>
-      <span style="color:var(--fear)">15–30 · Peur</span>
-      <span style="color:#f59e0b">30–45 · Prudence</span>
+      <span style="color:#16a34a">0–15 · Panique 🟢</span>
+      <span style="color:#84cc16">15–30 · Peur</span>
+      <span style="color:#60a5fa">30–45 · Prudence</span>
       <span style="color:var(--muted2)">45–55 · Neutre</span>
-      <span style="color:#60a5fa">55–70 · Optimisme</span>
-      <span style="color:var(--greed)">70–85 · Euphorie</span>
-      <span style="color:var(--euphoria)">85–100 · Extrême 🔴</span>
+      <span style="color:#f59e0b">55–70 · Optimisme</span>
+      <span style="color:#f97316">70–85 · Euphorie</span>
+      <span style="color:#ef4444">85–100 · Extrême 🔴</span>
     </div>
   </div>
 
@@ -508,13 +512,13 @@ function toggleMenu(){
 }
 
 function zoneColor(s){
-  if(s<15) return 'var(--panic)';   // vert vif  — panique = opportunité max
-  if(s<30) return 'var(--fear)';    // vert clair — peur = opportunité
-  if(s<45) return '#f59e0b';        // ambre      — prudence ✓
-  if(s<55) return 'var(--muted2)';  // gris       — neutre
-  if(s<70) return '#60a5fa';        // bleu       — optimisme ✓
-  if(s<85) return 'var(--greed)';   // orange     — euphorie = attention
-  return 'var(--euphoria)';         // rouge      — euphorie extrême = danger
+  if(s<15) return '#16a34a';   // vert foncé  — panique = opportunité max
+  if(s<30) return '#84cc16';   // vert clair  — peur = opportunité
+  if(s<45) return '#60a5fa';   // bleu        — prudence
+  if(s<55) return 'var(--muted2)'; // gris    — neutre
+  if(s<70) return '#f59e0b';   // ambre/or    — optimisme (attention croissante)
+  if(s<85) return '#f97316';   // orange      — euphorie = danger
+  return '#ef4444';             // rouge       — euphorie extrême = danger max
 }
 function zoneClass(s){
   if(s<15) return 'zone-panic';
@@ -681,12 +685,12 @@ async function renderHistorique(){
     beforeDraw(chart){
       const {ctx, chartArea:{left,right,top,bottom}, scales:{y}} = chart;
       const bands = [
-        [85, 100, 'rgba(220,38,38,0.35)',    '🔴 Euphorie extrême — Prudence maximale'],
-        [70,  85, 'rgba(234,88,12,0.28)',    '🟠 Euphorie — Attention'],
-        [55,  70, 'rgba(59,130,246,0.22)',   '🔵 Optimisme'],
+        [85, 100, 'rgba(239,68,68,0.35)',    '🔴 Euphorie extrême — Prudence maximale'],
+        [70,  85, 'rgba(249,115,22,0.28)',   '🟠 Euphorie — Attention'],
+        [55,  70, 'rgba(245,158,11,0.22)',   '🟡 Optimisme'],
         [45,  55, 'rgba(180,180,180,0.10)',  '⚪ Neutre'],
-        [30,  45, 'rgba(202,138,4,0.25)',    '🟡 Prudence'],
-        [15,  30, 'rgba(101,163,13,0.30)',   '🟢 Peur — Opportunités'],
+        [30,  45, 'rgba(96,165,250,0.25)',   '🔵 Prudence'],
+        [15,  30, 'rgba(132,204,22,0.30)',   '🟢 Peur — Opportunités'],
         [ 0,  15, 'rgba(22,163,74,0.40)',    '🟢 Panique — Zone d\'achat'],
       ];
       bands.forEach(([yMin, yMax, color, label])=>{
