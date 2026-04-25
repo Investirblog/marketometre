@@ -1,0 +1,43 @@
+name: Fetch Daily Market Data
+
+on:
+  schedule:
+    # Chaque jour de semaine à 7h30 UTC (9h30 heure belge) — après ouverture des marchés EU
+    - cron: '30 7 * * 1-5'
+  # Permet aussi de lancer manuellement depuis GitHub → Actions → Run workflow
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install yfinance requests
+
+      - name: Fetch market data → data.json
+        run: python fetch_data.py
+
+      - name: Commit data.json et history.json
+        run: |
+          git config user.name  "MarketOmetre Bot"
+          git config user.email "bot@marketometre.app"
+          echo "=== Contenu history.json ==="
+          cat history.json
+          echo "=== Git status ==="
+          git status
+          git add -f data.json history.json
+          git status
+          git diff --cached --stat
+          git commit -m "data: $(date +%Y-%m-%d)" || echo "Rien à committer"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
