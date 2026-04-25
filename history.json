@@ -1,1 +1,4 @@
-[{"date":"2026-04-24","scoreUS":67,"scoreEU":67,"vix":"19.3","vstoxx":"24.4","hy":"2.86","pc":"0.70","breadth":"45","euSent":"-11.4"}]
+[
+  {"date":"2026-04-24","scoreUS":65,"scoreEU":61,"vix":"21.2","vstoxx":"25.1","hy":"2.91","pc":"0.72","breadth":"38","euSent":"-11.4"},
+  {"date":"2026-04-25","scoreUS":67,"scoreEU":67,"vix":"19.3","vstoxx":"24.4","hy":"2.86","pc":"0.70","breadth":"45","euSent":"-11.4"}
+]
