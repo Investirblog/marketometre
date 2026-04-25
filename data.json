@@ -1,7 +1,7 @@
 {
   "date": "2026-04-25",
   "scoreUS": 70,
-  "scoreEU": 58,
+  "scoreEU": 56,
   "zoneUS": "Euphorie",
   "zoneEU": "Optimisme",
   "pillarsUS": [
@@ -39,8 +39,8 @@
     },
     {
       "name": "Sentiment (ZEW)",
-      "score": 43,
-      "raw": "0.0"
+      "score": 31,
+      "raw": "-17.2"
     },
     {
       "name": "Breadth SX5E/MA125",
