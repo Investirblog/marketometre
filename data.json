@@ -1,8 +1,8 @@
 {
   "date": "2026-04-25",
-  "scoreUS": 70,
+  "scoreUS": 66,
   "scoreEU": 56,
-  "zoneUS": "Euphorie",
+  "zoneUS": "Optimisme",
   "zoneEU": "Optimisme",
   "pillarsUS": [
     {
@@ -17,8 +17,8 @@
     },
     {
       "name": "Breadth (% >MA50)",
-      "score": 50,
-      "raw": "50%"
+      "score": 33,
+      "raw": "40%"
     },
     {
       "name": "Stress crédit (HY)",
