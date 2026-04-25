@@ -1,9 +1,9 @@
 {
   "date": "2026-04-25",
   "scoreUS": 66,
-  "scoreEU": 56,
+  "scoreEU": 24,
   "zoneUS": "Optimisme",
-  "zoneEU": "Optimisme",
+  "zoneEU": "Peur",
   "pillarsUS": [
     {
       "name": "Volatilité (VIX)",
@@ -34,8 +34,8 @@
   "pillarsEU": [
     {
       "name": "Volatilité (VSTOXX)",
-      "score": 66,
-      "raw": "22.0"
+      "score": 0,
+      "raw": "78.2"
     },
     {
       "name": "Sentiment (ZEW)",
@@ -49,8 +49,8 @@
     },
     {
       "name": "Stress crédit iTraxx",
-      "score": 76,
-      "raw": "3.96%"
+      "score": 0,
+      "raw": "14.08%"
     },
     {
       "name": "Momentum SX5E/MA125",
@@ -65,9 +65,9 @@
       "stress": false
     },
     "vstoxx": {
-      "value": "22.0",
+      "value": "78.2",
       "date": "realtime",
-      "stress": false
+      "stress": true
     },
     "hy": {
       "value": "2.86%",
