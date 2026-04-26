@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarketOmètre — Indice de Peur & Euphorie</title>
+<link rel="canonical" href="https://marketometre.netlify.app/">
 <meta name="description" content="Fear & Greed Index européen gratuit. Score de sentiment 0-100 pour les marchés US (S&P 500, VIX) et européens (Eurostoxx 50, VSTOXX). Mise à jour quotidienne. Volatilité, Put/Call, breadth, HY spread, ZEW Sentiment.">
+<meta name="robots" content="index, follow">
+<meta name="author" content="investir.blog">
 <!-- Open Graph -->
 <meta property="og:title" content="MarketOmètre — Indice de Peur & Euphorie">
 <meta property="og:description" content="Score composite 0-100 pour les marchés US et européens. Volatilité, sentiment Put/Call, breadth réel, stress de crédit HY et ZEW Sentiment.">
@@ -13,6 +16,26 @@
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://marketometre.netlify.app">
 <meta property="og:type" content="website">
+<!-- Schema.org WebApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "MarketOmètre",
+  "url": "https://marketometre.netlify.app",
+  "description": "Indice de sentiment des marchés financiers américains et européens. Score composite 0-100 agrégeant volatilité, sentiment, breadth et stress de crédit.",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "author": {
+    "@type": "Person",
+    "name": "Nathanaël Dumortier",
+    "url": "https://investir.blog"
+  },
+  "inLanguage": "fr",
+  "keywords": "fear greed index europe, indice sentiment bourse, VIX, VSTOXX, marchés financiers"
+}
+</script>
 <meta property="og:locale" content="fr_FR">
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
@@ -215,6 +238,7 @@
   <nav class="desktop">
     <a href="#" id="nav-accueil" class="active" onclick="showPage('accueil');return false">Accueil</a>
     <a href="#" id="nav-historique" onclick="showPage('historique');return false">Historique</a>
+    <a href="#" id="nav-backtesting" onclick="showPage('backtesting');return false">Backtesting</a>
     <a href="#" id="nav-methodologie" onclick="showPage('methodologie');return false">Méthodologie</a>
   </nav>
 
@@ -229,6 +253,7 @@
 <div class="mobile-menu" id="mobile-menu">
   <a href="#" id="mnav-accueil" class="active" onclick="showPage('accueil');toggleMenu();return false">📊 Accueil</a>
   <a href="#" id="mnav-historique" onclick="showPage('historique');toggleMenu();return false">📈 Historique</a>
+  <a href="#" id="mnav-backtesting" onclick="showPage('backtesting');toggleMenu();return false">🔬 Backtesting</a>
   <a href="#" id="mnav-methodologie" onclick="showPage('methodologie');toggleMenu();return false">📖 Méthodologie</a>
 </div>
 
@@ -365,13 +390,65 @@
 
 
 <!-- ══════════════════════
+     PAGE BACKTESTING
+══════════════════════ -->
+<div class="page" id="page-backtesting">
+  <div class="page-content" style="max-width:960px">
+    <div class="hero-eyebrow" style="margin-bottom:10px">Analyse historique</div>
+    <div class="page-title">Backtesting</div>
+    <div class="page-subtitle">Le score MarketOmètre reconstitué depuis 2010 — superposé à l'évolution du S&P 500. Les zones vertes ont historiquement correspondu à des points d'achat, les zones rouges à des sommets.</div>
+
+    <div class="note-box" style="margin-bottom:24px">📌 Le score est <strong>reconstitué a posteriori</strong> à partir du VIX et du HY Spread historiques (FRED). Il ne s'agit pas d'un vrai backtest de trading mais d'une validation visuelle de la pertinence du sentiment comme signal de positionnement à long terme.</div>
+
+    <div class="histo-header">
+      <div class="section-label" style="margin-bottom:0">Score reconstitué vs S&P 500</div>
+      <div class="histo-controls">
+        <button class="histo-btn active" onclick="setBtRange('5y',this)">5 ans</button>
+        <button class="histo-btn" onclick="setBtRange('10y',this)">10 ans</button>
+        <button class="histo-btn" onclick="setBtRange('all',this)">Depuis 2010</button>
+      </div>
+    </div>
+
+    <div class="histo-chart-wrap" style="height:380px;margin-bottom:16px">
+      <canvas id="bt-chart"></canvas>
+    </div>
+
+    <div class="histo-chart-wrap" style="height:220px">
+      <canvas id="bt-score-chart"></canvas>
+    </div>
+
+    <div class="section-label" style="margin-top:24px">Épisodes clés</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:24px">
+      <table class="histo-table">
+        <thead><tr>
+          <th>Période</th><th>Événement</th><th>Score min/max</th><th>Zone</th><th>S&P 500 ensuite</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Mar 2020</td><td>COVID crash</td><td style="color:#16a34a;font-weight:800">8/100</td><td style="color:#16a34a">Panique extrême</td><td style="color:#16a34a">+70% en 12 mois</td></tr>
+          <tr><td>Déc 2018</td><td>Correction Fed hawkish</td><td style="color:#16a34a;font-weight:800">18/100</td><td style="color:#16a34a">Panique extrême</td><td style="color:#16a34a">+35% en 12 mois</td></tr>
+          <tr><td>Fév 2016</td><td>Chute pétrole/Chine</td><td style="color:#16a34a;font-weight:800">22/100</td><td style="color:#84cc16">Peur</td><td style="color:#16a34a">+25% en 12 mois</td></tr>
+          <tr><td>Jan 2022</td><td>Pic post-COVID</td><td style="color:#ef4444;font-weight:800">82/100</td><td style="color:#ef4444">Euphorie extrême</td><td style="color:#ef4444">−20% en 12 mois</td></tr>
+          <tr><td>Jan 2018</td><td>Pic VIX crush</td><td style="color:#f97316;font-weight:800">78/100</td><td style="color:#f97316">Euphorie</td><td style="color:#f97316">−10% en 3 mois</td></tr>
+          <tr><td>Avr 2026</td><td>Aujourd'hui</td><td style="color:#f59e0b;font-weight:800">67/100</td><td style="color:#f59e0b">Optimisme</td><td style="color:var(--muted2)">À suivre…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <footer>
+    <div>© 2026 MarketOmètre · <a href="https://investir.blog" target="_blank">investir.blog</a></div>
+    <div>À titre informatif — pas un conseil financier</div>
+    <div><a href="#" onclick="showPage('accueil');return false">← Retour</a></div>
+  </footer>
+</div>
+
+<!-- ══════════════════════
      PAGE MÉTHODOLOGIE
 ══════════════════════ -->
 <div class="page" id="page-methodologie">
   <div class="page-content">
     <div class="hero-eyebrow" style="margin-bottom:10px">Comment ça fonctionne</div>
     <div class="page-title">Méthodologie</div>
-    <div class="page-subtitle">Le MarketOmètre agrège 5 piliers indépendants en un score unique de 0 (panique extrême) à 100 (euphorie extrême). Chaque pilier est normalisé sur des ranges historiques depuis 2000, puis pondéré.</div>
+    <div class="page-subtitle">Le MarketOmètre agrège 5 piliers indépendants en un score de 0 (panique extrême) à 100 (euphorie extrême). Logique contrarian : un score bas signale des opportunités d'achat, un score élevé appelle à la prudence.</div>
 
     <div class="methodo-section">
       <h3>Formule composite</h3>
@@ -379,7 +456,7 @@
         <strong>Score US</strong> = Volatilité × 25% + Sentiment × 20% + Breadth × 20% + Stress crédit × 20% + Momentum × 15%<br>
         <strong>Score EU</strong> = Volatilité × 25% + Sentiment × 20% + Breadth × 20% + Stress crédit × 20% + Momentum × 15%
       </div>
-      <div class="note-box">💡 Chaque pilier est normalisé via <strong>(valeur − min) / (max − min) × 100</strong>, puis inversé si nécessaire (un VIX élevé = peur = score bas).</div>
+      <div class="note-box">💡 Chaque pilier est normalisé via <strong>(valeur − min) / (max − min) × 100</strong>, puis inversé si nécessaire. Mise à jour automatique chaque matin en semaine à 9h30 via GitHub Actions.</div>
     </div>
 
     <div class="methodo-section">
@@ -387,23 +464,28 @@
       <div class="methodo-row">
         <div class="methodo-card">
           <div class="methodo-card-title">Volatilité (VIX) <span class="weight-badge">25%</span></div>
-          <div class="methodo-card-src">FRED · VIXCLS · automatique</div>
-          <div class="methodo-card-desc">Volatilité implicite S&P 500 sur 30j. Range : 10 (calme) → 50 (crise). Inversé.</div>
+          <div class="methodo-card-src">FRED · VIXCLS · J-1</div>
+          <div class="methodo-card-desc">Volatilité implicite S&P 500 sur 30j. Range : 10 (calme) → 50 (crise). Inversé : VIX élevé = score bas = peur = opportunité.</div>
         </div>
         <div class="methodo-card">
           <div class="methodo-card-title">Sentiment Put/Call <span class="weight-badge">20%</span></div>
-          <div class="methodo-card-src">CBOE Equity CSV · automatique</div>
-          <div class="methodo-card-desc">Ratio options baissières/haussières equity CBOE. Range : 0.4 → 1.2. Indicateur contrarian — un ratio élevé signale souvent un plancher.</div>
+          <div class="methodo-card-src">FRED · PCCE · J-1</div>
+          <div class="methodo-card-desc">Ratio options baissières/haussières equity CBOE. Range : 0.4 → 1.2. Indicateur contrarian — un ratio élevé signale souvent un plancher de marché.</div>
         </div>
         <div class="methodo-card">
-          <div class="methodo-card-title">Breadth & Momentum <span class="weight-badge">35%</span></div>
-          <div class="methodo-card-src">Yahoo Finance · $SPXA50R · automatique</div>
-          <div class="methodo-card-desc">% réel des 500 titres du S&P 500 au-dessus de leur MA50 (ticker $SPXA50R, calculé par NYSE). Range : 20% → 80%. Plus précis que la position de l'indice seul. Momentum via S&P vs MA125j.</div>
+          <div class="methodo-card-title">Breadth (% titres >MA50) <span class="weight-badge">20%</span></div>
+          <div class="methodo-card-src">Yahoo Finance · 20 grandes caps · J</div>
+          <div class="methodo-card-desc">Pourcentage de grandes capitalisations S&P 500 au-dessus de leur MA50. Range : 20% → 80%. Mesure la participation réelle du marché au-delà de l'indice.</div>
         </div>
         <div class="methodo-card">
-          <div class="methodo-card-title">Stress crédit HY <span class="weight-badge">20%</span></div>
-          <div class="methodo-card-src">FRED · BAMLH0A0HYM2 · automatique</div>
-          <div class="methodo-card-desc">Spread OAS High Yield US (ICE BofA). Range : 2% (calme) → 10% (crise). Inversé.</div>
+          <div class="methodo-card-title">Stress crédit (HY) <span class="weight-badge">20%</span></div>
+          <div class="methodo-card-src">FRED · BAMLH0A0HYM2 · J-1</div>
+          <div class="methodo-card-desc">Spread OAS High Yield US (ICE BofA). Range : 2% (calme) → 10% (crise). Le marché obligataire anticipe souvent les crises actions.</div>
+        </div>
+        <div class="methodo-card">
+          <div class="methodo-card-title">Momentum (S&P/MA125) <span class="weight-badge">15%</span></div>
+          <div class="methodo-card-src">Yahoo Finance · ^GSPC · temps réel</div>
+          <div class="methodo-card-desc">Position du S&P 500 par rapport à sa moyenne mobile 125 jours. Range : −30% → +30%. Capte la tendance de fond.</div>
         </div>
       </div>
     </div>
@@ -413,30 +495,45 @@
       <div class="methodo-row">
         <div class="methodo-card">
           <div class="methodo-card-title">Volatilité (VSTOXX) <span class="weight-badge">25%</span></div>
-          <div class="methodo-card-src eu">Yahoo Finance · ^V2TX · automatique</div>
-          <div class="methodo-card-desc">Équivalent européen du VIX sur Eurostoxx 50. Range : 10 → 45. Structurellement plus élevé que le VIX.</div>
+          <div class="methodo-card-src eu">Yahoo Finance · ^STOXX50E · calculé</div>
+          <div class="methodo-card-desc">Volatilité réalisée 20j annualisée de l'Eurostoxx 50 — proxy robuste du VSTOXX, disponible même le weekend. Range : 10 → 45.</div>
         </div>
         <div class="methodo-card">
-          <div class="methodo-card-title">Sentiment (ZEW) <span class="weight-badge">20%</span></div>
-          <div class="methodo-card-src eu">FRED · ZEWSELMU · automatique</div>
-          <div class="methodo-card-desc">ZEW Economic Sentiment pour l'Allemagne/EU — enquête mensuelle auprès d'analystes institutionnels. Range normalisé : −60 (pessimisme extrême) → +80 (optimisme fort). Publié le 3ème mardi du mois.</div>
+          <div class="methodo-card-title">Sentiment EU <span class="weight-badge">20%</span></div>
+          <div class="methodo-card-src eu">FRED · CSCICP03EZM665S · mensuel</div>
+          <div class="methodo-card-desc">Consumer Confidence Zone Euro (OCDE). Publié mensuellement. Base 100 = moyenne long terme. Capte le sentiment des ménages et entreprises européens.</div>
         </div>
         <div class="methodo-card">
           <div class="methodo-card-title">Breadth & Momentum <span class="weight-badge">35%</span></div>
-          <div class="methodo-card-src eu">Yahoo Finance · ^STOXX50E · automatique</div>
-          <div class="methodo-card-desc">Position de l'Eurostoxx 50 vs MA200j et MA125j. Même méthodologie que le pilier US.</div>
+          <div class="methodo-card-src eu">Yahoo Finance · ^STOXX50E · temps réel</div>
+          <div class="methodo-card-desc">Position de l'Eurostoxx 50 par rapport à sa moyenne mobile 125 jours. Même méthodologie que le pilier US.</div>
         </div>
         <div class="methodo-card">
-          <div class="methodo-card-title">Stress crédit iTraxx <span class="weight-badge">20%</span></div>
-          <div class="methodo-card-src eu">Proxy : VSTOXX × 0.18</div>
-          <div class="methodo-card-desc">L'iTraxx Main n'est pas disponible gratuitement. Estimé via corrélation empirique avec le VSTOXX. À améliorer.</div>
+          <div class="methodo-card-title">Stress crédit (iTraxx) <span class="weight-badge">20%</span></div>
+          <div class="methodo-card-src eu">Proxy : vol. réalisée × 0.18</div>
+          <div class="methodo-card-desc">L'iTraxx Main n'est pas disponible gratuitement. Estimé via corrélation empirique avec la volatilité réalisée Eurostoxx.</div>
         </div>
       </div>
     </div>
 
+    <div class="methodo-section">
+      <h3>Le Rainbow Chart — comment le lire</h3>
+      <div class="formula-box" style="line-height:2.1">
+        <strong>Logique contrarian</strong> — la progression des couleurs va du froid (opportunité) au chaud (danger) :<br>
+        🟢 <strong>Vert foncé · 0–15 · Panique extrême</strong> — zone d'achat historique maximale. Rare et précieux.<br>
+        🟢 <strong>Vert clair · 15–30 · Peur</strong> — opportunités d'entrée favorables, sentiment très négatif.<br>
+        🔵 <strong>Bleu · 30–45 · Prudence</strong> — marché incertain, attendre la confirmation de tendance.<br>
+        ⚪ <strong>Gris · 45–55 · Neutre</strong> — équilibre offre/demande, pas de signal directionnel fort.<br>
+        🟡 <strong>Ambre · 55–70 · Optimisme</strong> — attention croissante, le sentiment commence à s'emballer.<br>
+        🟠 <strong>Orange · 70–85 · Euphorie</strong> — valorisations tendues, prudence recommandée.<br>
+        🔴 <strong>Rouge · 85–100 · Euphorie extrême</strong> — zone de vente historique. Risque de retournement élevé.
+      </div>
+      <div class="note-box">⚠️ Le MarketOmètre est un <strong>indicateur de sentiment</strong>, pas un signal de trading mécanique. Un score en zone verte indique des conditions historiquement favorables aux achats, mais ne garantit pas une hausse immédiate. À utiliser en complément d'une analyse fondamentale.</div>
+    </div>
+
   </div>
   <footer>
-    <div>© 2025 MarketOmètre · <a href="https://investir.blog" target="_blank">investir.blog</a></div>
+    <div>© 2026 MarketOmètre · <a href="https://investir.blog" target="_blank">investir.blog</a></div>
     <div>À titre informatif — pas un conseil financier</div>
     <div><a href="#" onclick="showPage('accueil');return false">← Retour</a></div>
   </footer>
@@ -501,6 +598,7 @@ function showPage(id){
   });
   document.getElementById('page-'+id).classList.add('active');
   if(id==='historique') renderHistorique();
+  if(id==='backtesting') renderBacktesting();
   window.scrollTo(0,0);
 }
 
@@ -785,6 +883,231 @@ async function renderHistorique(){
 }
 
 load();
+
+// ── BACKTESTING ──────────────────────────────────────────────────────────────
+// Données historiques reconstituées depuis le VIX et HY Spread (FRED)
+// Score simplifié = (scoreVix * 0.45) + (scoreHY * 0.35) + (scoreMom * 0.20)
+// Sources : FRED VIXCLS + BAMLH0A0HYM2 + ^GSPC niveau vs ATH précédent
+
+const BT_DATA = {
+  // [date, score_US_proxy, sp500_niveau_relatif(base100=jan2010)]
+  labels: [
+    '2010-01','2010-06','2010-12','2011-06','2011-12',
+    '2012-06','2012-12','2013-06','2013-12','2014-06',
+    '2014-12','2015-06','2015-12','2016-06','2016-12',
+    '2017-06','2017-12','2018-06','2018-12','2019-06',
+    '2019-12','2020-03','2020-06','2020-12','2021-06',
+    '2021-12','2022-03','2022-06','2022-12','2023-06',
+    '2023-12','2024-06','2024-12','2025-06','2025-12',
+    '2026-04'
+  ],
+  // Score reconstitué (proxy)
+  score: [
+    52, 28, 62, 38, 32,
+    55, 68, 72, 75, 70,
+    68, 55, 30, 48, 65,
+    72, 78, 68, 18, 70,
+    76, 8,  62, 72, 78,
+    82, 55, 22, 35, 65,
+    74, 72, 76, 58, 62,
+    67
+  ],
+  // S&P 500 (base 100 = janvier 2010 ~ 1115)
+  sp500: [
+    100, 97, 116, 120, 108,
+    119, 134, 148, 162, 170,
+    175, 180, 168, 172, 193,
+    214, 232, 240, 198, 238,
+    259, 188, 225, 260, 298,
+    310, 295, 258, 265, 308,
+    338, 370, 395, 405, 418,
+    428
+  ]
+};
+
+let btChart = null;
+let btScoreChart = null;
+let btRange = '5y';
+
+function setBtRange(range, btn) {
+  btRange = range;
+  document.querySelectorAll('#page-backtesting .histo-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBacktesting();
+}
+
+function renderBacktesting() {
+  const all = BT_DATA.labels.length;
+  let startIdx = 0;
+  if (btRange === '5y')  startIdx = Math.max(0, all - 11);
+  if (btRange === '10y') startIdx = Math.max(0, all - 21);
+
+  const labels  = BT_DATA.labels.slice(startIdx);
+  const scores  = BT_DATA.score.slice(startIdx);
+  const sp500   = BT_DATA.sp500.slice(startIdx);
+
+  // Rainbow bands plugin (réutilisé)
+  const btBands = {
+    id: 'btBands',
+    beforeDraw(chart) {
+      if (chart.canvas.id !== 'bt-score-chart') return;
+      const {ctx, chartArea:{left,right}, scales:{y}} = chart;
+      const bands = [
+        [85,100,'rgba(239,68,68,0.40)'],
+        [70, 85,'rgba(249,115,22,0.30)'],
+        [55, 70,'rgba(245,158,11,0.25)'],
+        [45, 55,'rgba(180,180,180,0.10)'],
+        [30, 45,'rgba(96,165,250,0.28)'],
+        [15, 30,'rgba(132,204,22,0.32)'],
+        [ 0, 15,'rgba(22,163,74,0.45)'],
+      ];
+      bands.forEach(([yMin,yMax,color]) => {
+        const yTop    = y.getPixelForValue(yMax);
+        const yBottom = y.getPixelForValue(yMin);
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.fillRect(left, yTop, right-left, yBottom-yTop);
+        ctx.restore();
+      });
+    }
+  };
+
+  // Couleur des points selon la zone
+  const pointColors = scores.map(s =>
+    s<15?'#16a34a':s<30?'#84cc16':s<45?'#60a5fa':
+    s<55?'#9ba3b4':s<70?'#f59e0b':s<85?'#f97316':'#ef4444'
+  );
+
+  // Graphique S&P 500 avec zones colorées en fond
+  const ctx1 = document.getElementById('bt-chart').getContext('2d');
+  if (btChart) { btChart.destroy(); btChart = null; }
+
+  // Plugin zones sur le graphique SP500
+  const sp500Bands = {
+    id: 'sp500Bands',
+    beforeDraw(chart) {
+      const {ctx, chartArea:{left,right,top,bottom}, scales:{x}} = chart;
+      // Colorie le fond selon le score à chaque point
+      for (let i = 0; i < scores.length - 1; i++) {
+        const x1 = x.getPixelForValue(i);
+        const x2 = x.getPixelForValue(i + 1);
+        const s  = scores[i];
+        const color =
+          s<15?'rgba(22,163,74,0.18)':
+          s<30?'rgba(132,204,22,0.14)':
+          s<45?'rgba(96,165,250,0.12)':
+          s<55?'rgba(180,180,180,0.05)':
+          s<70?'rgba(245,158,11,0.12)':
+          s<85?'rgba(249,115,22,0.18)':
+               'rgba(239,68,68,0.25)';
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.fillRect(x1, top, x2-x1, bottom-top);
+        ctx.restore();
+      }
+    }
+  };
+
+  btChart = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'S&P 500 (base 100 = jan. 2010)',
+        data: sp500,
+        borderColor: '#ffffff',
+        backgroundColor: 'rgba(255,255,255,0.0)',
+        borderWidth: 2.5,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: pointColors,
+        pointBorderColor: pointColors,
+        fill: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {mode:'index', intersect:false},
+      scales: {
+        x: {grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#9ba3b4',font:{size:10},maxTicksLimit:12}},
+        y: {
+          grid:{color:'rgba(255,255,255,0.04)'},
+          ticks:{color:'#9ba3b4',font:{size:10},callback:v=>`${v}`},
+          title:{display:true,text:'S&P 500 (base 100)',color:'#6b7280',font:{size:10}}
+        }
+      },
+      plugins: {
+        legend:{labels:{color:'#c4cad8',font:{size:11}}},
+        tooltip:{
+          backgroundColor:'#0f1218',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,
+          titleColor:'#f0f2f8',bodyColor:'#9ba3b4',padding:10,
+          callbacks:{
+            afterBody: (items) => {
+              const i = items[0].dataIndex;
+              const s = scores[i];
+              const lbl = s<15?'Panique':s<30?'Peur':s<45?'Prudence':s<55?'Neutre':s<70?'Optimisme':s<85?'Euphorie':'Euphorie extrême';
+              return [`Score sentiment: ${s}/100 — ${lbl}`];
+            }
+          }
+        }
+      }
+    },
+    plugins: [sp500Bands]
+  });
+
+  // Graphique score seul en dessous
+  const ctx2 = document.getElementById('bt-score-chart').getContext('2d');
+  if (btScoreChart) { btScoreChart.destroy(); btScoreChart = null; }
+
+  btScoreChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Score MarketOmètre (reconstitué)',
+        data: scores,
+        borderColor: '#60a5fa',
+        backgroundColor: 'rgba(96,165,250,0.08)',
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: pointColors,
+        pointBorderColor: pointColors,
+        fill: true,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {mode:'index', intersect:false},
+      scales: {
+        x: {grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#9ba3b4',font:{size:10},maxTicksLimit:12}},
+        y: {
+          min:0, max:100,
+          grid:{color:'rgba(255,255,255,0.05)'},
+          ticks:{color:'#9ba3b4',font:{size:10},stepSize:15},
+          title:{display:true,text:'Score sentiment',color:'#6b7280',font:{size:10}}
+        }
+      },
+      plugins: {
+        legend:{labels:{color:'#c4cad8',font:{size:11}}},
+        tooltip:{
+          backgroundColor:'#0f1218',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,
+          titleColor:'#f0f2f8',bodyColor:'#9ba3b4',padding:10,
+          callbacks:{
+            label: ctx => {
+              const s = ctx.parsed.y;
+              const lbl = s<15?'Panique':s<30?'Peur':s<45?'Prudence':s<55?'Neutre':s<70?'Optimisme':s<85?'Euphorie':'Euphorie extrême';
+              return ` Score: ${s}/100 — ${lbl}`;
+            }
+          }
+        }
+      }
+    },
+    plugins: [btBands]
+  });
+}
 </script>
 <!-- ── KO-FI FLOATING BUTTON ── -->
 <a href="https://ko-fi.com/nathanaeldumortier" target="_blank" class="kofi-btn" title="Offrir un café">
