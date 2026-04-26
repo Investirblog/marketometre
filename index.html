@@ -783,15 +783,15 @@ async function renderHistorique(){
     beforeDraw(chart){
       const {ctx, chartArea:{left,right,top,bottom}, scales:{y}} = chart;
       const bands = [
-        [85, 100, 'rgba(239,68,68,0.62)',    '🔴 Euphorie extrême'],
-        [70,  85, 'rgba(249,115,22,0.52)',   '🟠 Euphorie'],
-        [55,  70, 'rgba(245,158,11,0.44)',   '🟡 Optimisme'],
-        [45,  55, 'rgba(180,180,180,0.12)',  '⚪ Neutre'],
-        [30,  45, 'rgba(96,165,250,0.48)',   '🔵 Prudence'],
-        [15,  30, 'rgba(132,204,22,0.52)',   '🟢 Peur — Opportunités'],
-        [ 0,  15, 'rgba(22,163,74,0.65)',    '🟢 Panique — Zone d\'achat'],
+        [85, 100, 'rgba(220,38,38,0.72)',    '🔴 Euphorie extrême'],
+        [70,  85, 'rgba(249,115,22,0.65)',   '🟠 Euphorie'],
+        [55,  70, 'rgba(250,204,21,0.55)',   '🟡 Optimisme'],
+        [45,  55, 'rgba(148,163,184,0.12)',  '⚪ Neutre'],
+        [30,  45, 'rgba(59,130,246,0.58)',   '🔵 Prudence'],
+        [15,  30, 'rgba(134,239,172,0.55)',  '🟢 Peur — Opportunités'],
+        [ 0,  15, 'rgba(22,163,74,0.70)',    '🟢 Panique — Zone d\'achat'],
       ];
-      const LABEL_COLOR = 'rgba(255,255,255,0.82)';
+      const LABEL_COLOR = 'rgba(255,255,255,0.90)';
       bands.forEach(([yMin, yMax, color, label])=>{
         const yTop    = y.getPixelForValue(yMax);
         const yBottom = y.getPixelForValue(yMin);
@@ -953,13 +953,13 @@ function renderBacktesting() {
       if (chart.canvas.id !== 'bt-score-chart') return;
       const {ctx, chartArea:{left,right}, scales:{y}} = chart;
       const bands = [
-        [85,100,'rgba(239,68,68,0.62)'],
-        [70, 85,'rgba(249,115,22,0.52)'],
-        [55, 70,'rgba(245,158,11,0.44)'],
-        [45, 55,'rgba(180,180,180,0.12)'],
-        [30, 45,'rgba(96,165,250,0.48)'],
-        [15, 30,'rgba(132,204,22,0.52)'],
-        [ 0, 15,'rgba(22,163,74,0.65)'],
+        [85,100,'rgba(220,38,38,0.72)'],
+        [70, 85,'rgba(249,115,22,0.65)'],
+        [55, 70,'rgba(250,204,21,0.55)'],
+        [45, 55,'rgba(148,163,184,0.12)'],
+        [30, 45,'rgba(59,130,246,0.58)'],
+        [15, 30,'rgba(134,239,172,0.55)'],
+        [ 0, 15,'rgba(22,163,74,0.70)'],
       ];
       bands.forEach(([yMin,yMax,color]) => {
         const yTop    = y.getPixelForValue(yMax);
@@ -993,13 +993,13 @@ function renderBacktesting() {
         const x2 = x.getPixelForValue(i + 1);
         const s  = scores[i];
         const color =
-          s<15?'rgba(22,163,74,0.55)':
-          s<30?'rgba(132,204,22,0.45)':
-          s<45?'rgba(96,165,250,0.38)':
-          s<55?'rgba(180,180,180,0.08)':
-          s<70?'rgba(245,158,11,0.42)':
-          s<85?'rgba(249,115,22,0.52)':
-               'rgba(239,68,68,0.65)';
+          s<15?'rgba(22,163,74,0.65)':
+          s<30?'rgba(134,239,172,0.50)':
+          s<45?'rgba(59,130,246,0.52)':
+          s<55?'rgba(148,163,184,0.10)':
+          s<70?'rgba(250,204,21,0.52)':
+          s<85?'rgba(249,115,22,0.62)':
+               'rgba(220,38,38,0.72)';
         ctx.save();
         ctx.fillStyle = color;
         ctx.fillRect(x1, top, x2-x1, bottom-top);
