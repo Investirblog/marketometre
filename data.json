@@ -34,7 +34,7 @@
   "pillarsEU": [
     {
       "name": "Volatilité (VSTOXX)",
-      "score": 61,
+      "score": 60,
       "raw": "23.8"
     },
     {
@@ -45,7 +45,7 @@
     {
       "name": "Breadth SX5E/MA125",
       "score": 52,
-      "raw": "+1.2%"
+      "raw": "+1.4%"
     },
     {
       "name": "Stress crédit iTraxx",
@@ -55,7 +55,7 @@
     {
       "name": "Momentum SX5E/MA125",
       "score": 52,
-      "raw": "+1.2%"
+      "raw": "+1.4%"
     }
   ],
   "kpis": {
