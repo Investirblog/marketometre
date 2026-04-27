@@ -272,12 +272,13 @@ def main():
         json.dump(output, f, ensure_ascii=False, indent=2)
     print(f'  history.json local: {len(history)} entrée(s).')
 
-    # Écrire directement sur GitHub via API (fiable, contourne git)
-    gh_token = os.getenv('GH_TOKEN', '')
+    # Écrire directement sur GitHub via API
+    # GITHUB_TOKEN est automatiquement disponible dans GitHub Actions
+    gh_token = os.getenv('GITHUB_TOKEN') or os.getenv('GH_TOKEN', '')
     if gh_token:
         push_to_github(output, gh_token)
     else:
-        print('  [GitHub] GH_TOKEN absent, pas de push API.')
+        print('  [GitHub] Aucun token disponible, pas de push API.')
 
     print(f'  Dernière entrée: {history[-1]}')
     print('=== Done ===')

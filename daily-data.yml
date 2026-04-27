@@ -26,8 +26,8 @@ jobs:
       - name: Fetch market data → data.json
         run: python fetch_data.py
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          FRED_KEY: ${{ secrets.FRED_KEY }}
 
       - name: Commit data.json et history.json
         run: |
