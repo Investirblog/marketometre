@@ -24,7 +24,15 @@ jobs:
         run: pip install yfinance requests
 
       - name: Fetch market data
-        run: python fetch_data.py
+        run: |
+          echo "=== Répertoire courant ==="
+          pwd
+          ls -la
+          python fetch_data.py
+          echo "=== Fichiers après fetch ==="
+          ls -la *.json
+          echo "=== Contenu history.json ==="
+          cat history.json
 
       - name: Commit fichiers
         run: |
