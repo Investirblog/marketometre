@@ -250,16 +250,81 @@ def main():
     })
     history = sorted(history, key=lambda e: e['date'])[-365:]
 
-    output = {
-        'last_updated': today_str,
-        'entries': history
+    new_entry = {
+        'date':    today_str,
+        'scoreUS': scoreUS,
+        'scoreEU': scoreEU,
+        'vix':     f'{vix_val:.1f}',
+        'vstoxx':  f'{vstoxx_val:.1f}',
+        'hy':      f'{hy_val:.2f}',
+        'pc':      f'{pc_val:.2f}',
+        'breadth': f'{breadth_val:.0f}',
+        'euSent':  f'{eu_sent:.1f}',
     }
+    history = [e for e in history if e.get('date') != today_str]
+    history.append(new_entry)
+    history = sorted(history, key=lambda e: e['date'])[-365:]
 
-    with open(history_file, 'w', encoding='utf-8') as f:
+    output = {'last_updated': today_str, 'entries': history}
+
+    # Écrire localement
+    with open('history.json', 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
-    print(f'  history.json: {len(history)} entrée(s).')
+    print(f'  history.json local: {len(history)} entrée(s).')
+
+    # Écrire directement sur GitHub via API (fiable, contourne git)
+    gh_token = os.getenv('GH_TOKEN', '')
+    if gh_token:
+        push_to_github(output, gh_token)
+    else:
+        print('  [GitHub] GH_TOKEN absent, pas de push API.')
+
     print(f'  Dernière entrée: {history[-1]}')
     print('=== Done ===')
+
+
+def push_to_github(content, token):
+    """Écrit history.json sur GitHub via l'API REST — fiable à 100%."""
+    import base64
+    GH_OWNER = 'Investirblog'
+    GH_REPO  = 'marketometre'
+    GH_FILE  = 'history.json'
+    api_url  = f'https://api.github.com/repos/{GH_OWNER}/{GH_REPO}/contents/{GH_FILE}'
+    headers  = {
+        'Authorization': f'token {token}',
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+    }
+
+    # Récupérer le SHA actuel du fichier
+    sha = None
+    r = requests.get(api_url, headers=headers, timeout=15)
+    if r.status_code == 200:
+        sha = r.json().get('sha')
+        print(f'  [GitHub] history.json trouvé, SHA={sha[:8]}')
+    elif r.status_code == 404:
+        print(f'  [GitHub] history.json n\'existe pas encore, création...')
+    else:
+        print(f'  [GitHub] GET échoué: {r.status_code} {r.text[:100]}')
+        return
+
+    json_str  = json.dumps(content, ensure_ascii=False, indent=2)
+    b64       = base64.b64encode(json_str.encode('utf-8')).decode()
+    today_str = content['last_updated']
+
+    body = {
+        'message': f'history: {today_str}',
+        'content': b64,
+    }
+    if sha:
+        body['sha'] = sha
+
+    r2 = requests.put(api_url, headers=headers, json=body, timeout=30)
+    if r2.status_code in (200, 201):
+        print(f'  [GitHub] history.json mis à jour ✓ ({len(content["entries"])} entrées)')
+    else:
+        print(f'  [GitHub] PUT échoué: {r2.status_code} {r2.text[:200]}')
+
 
 if __name__ == '__main__':
     main()
