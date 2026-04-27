@@ -669,7 +669,10 @@ async function getHistory(){
   try{
     const r=await fetch('./history.json?t='+Date.now());
     if(!r.ok) return [];
-    return await r.json();
+    const data=await r.json();
+    // Supporte ancien format (tableau) et nouveau (objet avec entries)
+    if(Array.isArray(data)) return data;
+    return data.entries || [];
   }catch(e){
     console.warn('history.json indisponible:', e.message);
     return [];

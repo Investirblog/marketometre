@@ -224,7 +224,15 @@ def main():
     try:
         with open(history_file, 'r', encoding='utf-8') as f:
             content = f.read().strip()
-            history = json.loads(content) if content and content != '[]' else []
+            if not content:
+                history = []
+            else:
+                data_h = json.loads(content)
+                # Supporte l'ancien format (liste) et le nouveau (dict avec entries)
+                if isinstance(data_h, list):
+                    history = data_h
+                else:
+                    history = data_h.get('entries', [])
     except (FileNotFoundError, json.JSONDecodeError):
         history = []
 
@@ -242,10 +250,15 @@ def main():
     })
     history = sorted(history, key=lambda e: e['date'])[-365:]
 
+    output = {
+        'last_updated': today_str,
+        'entries': history
+    }
+
     with open(history_file, 'w', encoding='utf-8') as f:
-        json.dump(history, f, ensure_ascii=False, indent=2)
+        json.dump(output, f, ensure_ascii=False, indent=2)
     print(f'  history.json: {len(history)} entrée(s).')
-    print(f'  Première entrée: {history[0]}')
+    print(f'  Dernière entrée: {history[-1]}')
     print('=== Done ===')
 
 if __name__ == '__main__':
