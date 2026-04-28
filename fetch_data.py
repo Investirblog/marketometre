@@ -275,10 +275,11 @@ def main():
     # Écrire directement sur GitHub via API
     # GITHUB_TOKEN est automatiquement disponible dans GitHub Actions
     gh_token = os.getenv('GITHUB_TOKEN') or os.getenv('GH_TOKEN', '')
+    print(f'  [GitHub] Token disponible: {"oui" if gh_token else "non"} (longueur: {len(gh_token)})')
     if gh_token:
         push_to_github(output, gh_token)
     else:
-        print('  [GitHub] Aucun token disponible, pas de push API.')
+        print('  [GitHub] Aucun token disponible.')
 
     print(f'  Dernière entrée: {history[-1]}')
     print('=== Done ===')
