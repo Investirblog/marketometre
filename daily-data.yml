@@ -23,108 +23,70 @@ jobs:
       - name: Install dependencies
         run: pip install yfinance requests
 
-      - name: Fetch market data
+      - name: Fetch et mise à jour history
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "=== Répertoire courant ==="
-          pwd
-          ls -la
           python fetch_data.py
-          echo "=== Fichiers après fetch ==="
-          ls -la *.json
-          echo "=== Contenu history.json ==="
-          cat history.json
 
-      - name: Commit fichiers
-        run: |
-          git config user.name  "MarketOmetre Bot"
-          git config user.email "bot@marketometre.app"
-          
-          # Mettre à jour history.json via l'API GitHub (bash a accès à GITHUB_TOKEN)
           TODAY=$(date +%Y-%m-%d)
-          
-          # Lire le SHA actuel de history.json
-          SHA=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/Investirblog/marketometre/contents/history.json" \
-            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('sha',''))" 2>/dev/null || echo "")
-          
-          # Lire le contenu actuel décodé
-          CURRENT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/Investirblog/marketometre/contents/history.json" \
-            | python3 -c "import sys,json,base64; d=json.load(sys.stdin); print(base64.b64decode(d['content']).decode())" 2>/dev/null || echo '{"last_updated":"","entries":[]}')
-          
-          # Construire le nouveau history.json avec Python
-          NEW_HISTORY=$(python3 << 'PYEOF'
-import json, sys, os
+          API="https://api.github.com/repos/Investirblog/marketometre/contents/history.json"
 
-today = os.popen('date +%Y-%m-%d').read().strip()
-current_raw = os.environ.get('CURRENT_HISTORY', '{"last_updated":"","entries":[]}')
+          # Récupérer SHA et contenu actuel
+          RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$API")
+          SHA=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('sha',''))")
+          CURRENT=$(echo "$RESPONSE" | python3 -c "import sys,json,base64; d=json.load(sys.stdin); print(base64.b64decode(d['content']).decode())")
 
-try:
-    data = json.loads(current_raw)
-    entries = data.get('entries', []) if isinstance(data, dict) else data
-except:
-    entries = []
+          echo "SHA: $SHA"
 
-# Lire data.json pour récupérer les scores du jour
+          # Construire nouveau history.json et l'écrire dans un fichier temporaire
+          python3 -c "
+import json, sys
+from datetime import date
+
+today = '${TODAY}'
+current = json.loads(open('/dev/stdin').read())
+entries = current.get('entries', current) if isinstance(current, dict) else current
+
 with open('data.json') as f:
     d = json.load(f)
 
 entries = [e for e in entries if e.get('date') != today]
 entries.append({
     'date': today,
-    'scoreUS': d['scoreUS'], 'scoreEU': d['scoreEU'],
-    'vix': d['kpis']['vix']['value'],
-    'vstoxx': d['kpis']['vstoxx']['value'],
-    'hy': d['kpis']['hy']['value'].replace('%',''),
-    'pc': d['kpis']['pc']['value'],
+    'scoreUS': d['scoreUS'],
+    'scoreEU': d['scoreEU'],
+    'vix':     d['kpis']['vix']['value'],
+    'vstoxx':  d['kpis']['vstoxx']['value'],
+    'hy':      d['kpis']['hy']['value'].replace('%',''),
+    'pc':      d['kpis']['pc']['value'],
     'breadth': str(d['pillarsUS'][2]['score']),
-    'euSent': str(d['pillarsEU'][1]['score']),
+    'euSent':  str(d['pillarsEU'][1]['score']),
 })
 entries = sorted(entries, key=lambda e: e['date'])[-365:]
 output = {'last_updated': today, 'entries': entries}
-print(json.dumps(output, ensure_ascii=False, indent=2))
-PYEOF
-)
-          CURRENT_HISTORY="$CURRENT" python3 -c "
-import json, os
-today = os.popen('date +%Y-%m-%d').read().strip()
-current_raw = os.environ.get('CURRENT_HISTORY', '{\"last_updated\":\"\",\"entries\":[]}')
-try:
-    data = json.loads(current_raw)
-    entries = data.get('entries', []) if isinstance(data, dict) else data
-except:
-    entries = []
-with open('data.json') as f:
-    d = json.load(f)
-entries = [e for e in entries if e.get('date') != today]
-entries.append({'date': today, 'scoreUS': d['scoreUS'], 'scoreEU': d['scoreEU'],
-    'vix': d['kpis']['vix']['value'], 'vstoxx': d['kpis']['vstoxx']['value'],
-    'hy': d['kpis']['hy']['value'].replace('%',''), 'pc': d['kpis']['pc']['value'],
-    'breadth': str(d['pillarsUS'][2]['score']), 'euSent': str(d['pillarsEU'][1]['score'])})
-entries = sorted(entries, key=lambda e: e['date'])[-365:]
-output = {'last_updated': today, 'entries': entries}
-content = json.dumps(output, ensure_ascii=False, indent=2)
-import base64
-b64 = base64.b64encode(content.encode()).decode()
-with open('history_new.json', 'w') as f:
-    f.write(content)
-print(f'  {len(entries)} entrees dans history.json')
-" 2>&1
-          
-          # Pusher via API GitHub
-          CONTENT_B64=$(python3 -c "import base64; print(base64.b64encode(open('history_new.json','rb').read()).decode())")
-          
-          RESPONSE=$(curl -s -X PUT \
+with open('history_new.json','w') as f:
+    json.dump(output, f, ensure_ascii=False, indent=2)
+print(f'history_new.json: {len(entries)} entrees')
+" <<< "$CURRENT"
+
+          echo "Fichier construit:"
+          cat history_new.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{len(d[\"entries\"])} entrees, derniere: {d[\"entries\"][-1][\"date\"]}')"
+
+          # Encoder en base64 et pousser
+          B64=$(base64 -w 0 history_new.json)
+
+          PUSH=$(curl -s -X PUT \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"message\":\"history: $(date +%Y-%m-%d)\",\"content\":\"$CONTENT_B64\",\"sha\":\"$SHA\"}" \
-            "https://api.github.com/repos/Investirblog/marketometre/contents/history.json")
-          
-          echo "API Response: $(echo $RESPONSE | python3 -c 'import sys,json; d=json.load(sys.stdin); print(d.get("commit",{}).get("sha","ERREUR: "+str(d.get("message",d)))[:60])' 2>/dev/null)"
-          
-          # Committer data.json normalement
+            -d "{\"message\":\"history: ${TODAY}\",\"content\":\"${B64}\",\"sha\":\"${SHA}\"}" \
+            "$API")
+
+          echo "Push result: $(echo "$PUSH" | python3 -c "import sys,json; d=json.load(sys.stdin); print('OK '+d['commit']['sha'][:8] if 'commit' in d else 'ERR: '+str(d.get('message',''))[:80])")"
+
+          # Committer data.json
+          git config user.name  "MarketOmetre Bot"
+          git config user.email "bot@marketometre.app"
           git add data.json
-          git commit -m "data: $(date +%Y-%m-%d)" || echo "Rien a committer"
+          git commit -m "data: ${TODAY}" || echo "Rien a committer"
           git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
