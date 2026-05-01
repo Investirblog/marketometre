@@ -237,7 +237,6 @@
 
   <nav class="desktop">
     <a href="#" id="nav-accueil" class="active" onclick="showPage('accueil');return false">Accueil</a>
-    <a href="#" id="nav-historique" onclick="showPage('historique');return false">Historique</a>
     <a href="#" id="nav-backtesting" onclick="showPage('backtesting');return false">Backtesting</a>
     <a href="#" id="nav-methodologie" onclick="showPage('methodologie');return false">Méthodologie</a>
   </nav>
@@ -252,7 +251,6 @@
 <!-- mobile menu -->
 <div class="mobile-menu" id="mobile-menu">
   <a href="#" id="mnav-accueil" class="active" onclick="showPage('accueil');toggleMenu();return false">📊 Accueil</a>
-  <a href="#" id="mnav-historique" onclick="showPage('historique');toggleMenu();return false">📈 Historique</a>
   <a href="#" id="mnav-backtesting" onclick="showPage('backtesting');toggleMenu();return false">🔬 Backtesting</a>
   <a href="#" id="mnav-methodologie" onclick="showPage('methodologie');toggleMenu();return false">📖 Méthodologie</a>
 </div>
@@ -540,49 +538,6 @@
 </div>
 
 
-<!-- ══════════════════════
-     PAGE HISTORIQUE
-══════════════════════ -->
-<div class="page" id="page-historique">
-  <div class="page-content" style="max-width:960px">
-    <div class="hero-eyebrow" style="margin-bottom:10px">Évolution dans le temps</div>
-    <div class="page-title">Historique</div>
-    <div class="page-subtitle">Suivi quotidien des scores depuis la mise en ligne. L'historique est partagé entre tous les visiteurs.</div>
-
-    <div class="histo-header">
-      <div class="section-label" style="margin-bottom:0">Score composite</div>
-      <div class="histo-controls">
-        <button class="histo-btn active" onclick="setRange(30,this)">30j</button>
-        <button class="histo-btn" onclick="setRange(90,this)">90j</button>
-        <button class="histo-btn" onclick="setRange(365,this)">1 an</button>
-      </div>
-    </div>
-
-    <div class="histo-chart-wrap">
-      <canvas id="histo-chart" height="260"></canvas>
-    </div>
-
-    <div class="section-label">Dernières valeurs</div>
-    <div class="histo-table-wrap">
-      <table class="histo-table">
-        <thead>
-          <tr>
-            <th>Date</th><th>Score US</th><th>Zone US</th><th>Score EU</th><th>Zone EU</th><th>VIX</th><th>P/C</th>
-          </tr>
-        </thead>
-        <tbody id="histo-tbody">
-          <tr><td colspan="7" style="text-align:center;color:var(--muted2);padding:28px">Chargement…</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-  </div>
-  <footer>
-    <div>© 2025 MarketOmètre · <a href="https://investir.blog" target="_blank">investir.blog</a></div>
-    <div>À titre informatif — pas un conseil financier</div>
-    <div><a href="#" onclick="showPage('accueil');return false">← Retour</a></div>
-  </footer>
-</div>
 
 
 <!-- ══ SCRIPTS ══ -->
@@ -597,7 +552,6 @@ function showPage(id){
     if(el) el.classList.add('active');
   });
   document.getElementById('page-'+id).classList.add('active');
-  if(id==='historique') renderHistorique();
   if(id==='backtesting') renderBacktesting();
   window.scrollTo(0,0);
 }
@@ -665,20 +619,6 @@ function setPillar(prefix, i, score, rawVal){
 }
 
 // ── HISTORIQUE — lit history.json directement (généré par GitHub Actions) ──
-async function getHistory(){
-  try{
-    const r=await fetch('./history.json?t='+Date.now());
-    if(!r.ok) return [];
-    const data=await r.json();
-    // Supporte ancien format (tableau) et nouveau (objet avec entries)
-    if(Array.isArray(data)) return data;
-    return data.entries || [];
-  }catch(e){
-    console.warn('history.json indisponible:', e.message);
-    return [];
-  }
-}
-
 // ── LOAD — lit data.json généré par GitHub Actions ──
 async function load(){
   const now = new Date();
@@ -732,157 +672,7 @@ async function load(){
   $('kpi-hy').className   = 'trend-card-value ' + zoneClass(d.pillarsUS[3].score);
   $('kpi-hy-sub').textContent = k.hy.stress ? '⚠ Spreads élevés' : '✓ Spreads contenus';
 
-  // Historique géré par GitHub Actions — pas besoin de push depuis le frontend
-}
-
-let currentRange=30;
-let histoChart=null;
-
-function setRange(n,btn){
-  currentRange=n;
-  document.querySelectorAll('.histo-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderHistorique();
-}
-
-async function renderHistorique(){
-  const allHistory=await getHistory();
-  const history=allHistory.slice(-currentRange);
-  const tbody=document.getElementById('histo-tbody');
-
-  if(history.length===0){
-    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted2);padding:28px">Aucune donnée encore. Revenez demain !</td></tr>';
-  } else {
-    tbody.innerHTML=[...history].reverse().map(e=>{
-      const cUS=zoneColor(e.scoreUS),cEU=zoneColor(e.scoreEU);
-      return `<tr>
-        <td>${e.date}</td>
-        <td style="color:${cUS};font-weight:800">${e.scoreUS}</td>
-        <td style="color:${cUS}">${zoneLabel(e.scoreUS)}</td>
-        <td style="color:${cEU};font-weight:800">${e.scoreEU}</td>
-        <td style="color:${cEU}">${zoneLabel(e.scoreEU)}</td>
-        <td>${e.vix||'—'}</td>
-        <td>${e.pc||'—'}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  const canvas=document.getElementById('histo-chart');
-  const ctx=canvas.getContext('2d');
-  if(histoChart){histoChart.destroy();histoChart=null}
-
-  if(history.length<2){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='rgba(155,163,180,0.4)';
-    ctx.font='600 13px Open Sans';
-    ctx.textAlign='center';
-    ctx.fillText('Pas encore assez de données — revenez demain !',canvas.width/2,130);
-    return;
-  }
-
-  // ── RAINBOW CHART — bandes de zone en arrière-plan ──
-  const rainbowBands = {
-    id: 'rainbowBands',
-    beforeDraw(chart){
-      const {ctx, chartArea:{left,right,top,bottom}, scales:{y}} = chart;
-      const bands = [
-        [85, 100, 'rgba(220,38,38,0.72)',    '🔴 Euphorie extrême'],
-        [70,  85, 'rgba(249,115,22,0.65)',   '🟠 Euphorie'],
-        [55,  70, 'rgba(250,204,21,0.55)',   '🟡 Optimisme'],
-        [45,  55, 'rgba(148,163,184,0.12)',  '⚪ Neutre'],
-        [30,  45, 'rgba(59,130,246,0.58)',   '🔵 Prudence'],
-        [15,  30, 'rgba(134,239,172,0.55)',  '🟢 Peur — Opportunités'],
-        [ 0,  15, 'rgba(22,163,74,0.70)',    '🟢 Panique — Zone d\'achat'],
-      ];
-      const LABEL_COLOR = 'rgba(255,255,255,0.90)';
-      bands.forEach(([yMin, yMax, color, label])=>{
-        const yTop    = y.getPixelForValue(yMax);
-        const yBottom = y.getPixelForValue(yMin);
-        ctx.save();
-        ctx.fillStyle = color;
-        ctx.fillRect(left, yTop, right-left, yBottom-yTop);
-        // Label de zone à gauche
-        ctx.fillStyle = LABEL_COLOR;
-        ctx.font = 'bold 10px Open Sans, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(label, left+6, yTop+12);
-        ctx.restore();
-      });
-    }
-  };
-
-  histoChart=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:history.map(e=>e.date.slice(5)),
-      datasets:[
-        {
-          label:'États-Unis',
-          data:history.map(e=>e.scoreUS),
-          borderColor:'#3b82f6',
-          backgroundColor:'rgba(59,130,246,0.0)',
-          tension:0.4,
-          pointRadius:history.length>60?0:4,
-          pointBackgroundColor:'#3b82f6',
-          borderWidth:2.5,
-          fill:false,
-        },
-        {
-          label:'Europe',
-          data:history.map(e=>e.scoreEU),
-          borderColor:'#10b981',
-          backgroundColor:'rgba(16,185,129,0.0)',
-          tension:0.4,
-          pointRadius:history.length>60?0:4,
-          pointBackgroundColor:'#10b981',
-          borderWidth:2.5,
-          fill:false,
-        }
-      ]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      scales:{
-        x:{
-          grid:{color:'rgba(255,255,255,0.04)'},
-          ticks:{color:'#9ba3b4',font:{size:11},maxTicksLimit:12}
-        },
-        y:{
-          min:0,max:100,
-          grid:{color:'rgba(255,255,255,0.06)'},
-          ticks:{
-            color:'#9ba3b4',font:{size:11},
-            stepSize:15,
-            callback: v=>{
-              const labels={0:'0',15:'15',30:'30',45:'45',55:'55',70:'70',85:'85',100:'100'};
-              return labels[v]??v;
-            }
-          }
-        }
-      },
-      plugins:{
-        legend:{labels:{color:'#c4cad8',font:{size:12,weight:'600'},boxWidth:12,padding:16}},
-        tooltip:{
-          backgroundColor:'#0f1218',
-          borderColor:'rgba(255,255,255,0.1)',
-          borderWidth:1,
-          titleColor:'#f0f2f8',
-          bodyColor:'#9ba3b4',
-          padding:12,
-          callbacks:{
-            label: ctx => {
-              const v = ctx.parsed.y;
-              const lbl = v<15?'Panique':v<30?'Peur':v<45?'Prudence':v<55?'Neutre':v<70?'Optimisme':v<85?'Euphorie':'Euphorie extrême';
-              return ` ${ctx.dataset.label}: ${v}/100 — ${lbl}`;
-            }
-          }
-        }
-      }
-    },
-    plugins:[rainbowBands]
-  });
+  // Historique géré par GitHub Actions
 }
 
 load();
