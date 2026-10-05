@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-02",
+  "date": "2026-10-05",
   "scoreUS": 67,
   "scoreEU": 66,
   "zoneUS": "Optimisme",
@@ -7,8 +7,8 @@
   "pillarsUS": [
     {
       "name": "Volatilité (VIX)",
-      "score": 84,
-      "raw": "16.4"
+      "score": 87,
+      "raw": "15.3"
     },
     {
       "name": "Sentiment (Put/Call)",
@@ -17,25 +17,25 @@
     },
     {
       "name": "Breadth (% >MA50)",
-      "score": 42,
-      "raw": "45%"
+      "score": 33,
+      "raw": "40%"
     },
     {
       "name": "Stress crédit (HY)",
       "score": 86,
-      "raw": "3.12%"
+      "raw": "3.10%"
     },
     {
       "name": "Momentum S&P/MA125",
       "score": 56,
-      "raw": "+3.6%"
+      "raw": "+3.7%"
     }
   ],
   "pillarsEU": [
     {
       "name": "Volatilité (VSTOXX)",
-      "score": 89,
-      "raw": "13.7"
+      "score": 90,
+      "raw": "13.4"
     },
     {
       "name": "Sentiment EU",
@@ -45,33 +45,33 @@
     {
       "name": "Breadth SX5E/MA125",
       "score": 51,
-      "raw": "+0.8%"
+      "raw": "+0.6%"
     },
     {
       "name": "Stress crédit iTraxx",
-      "score": 94,
-      "raw": "2.46%"
+      "score": 95,
+      "raw": "2.42%"
     },
     {
       "name": "Momentum SX5E/MA125",
       "score": 51,
-      "raw": "+0.8%"
+      "raw": "+0.6%"
     }
   ],
   "kpis": {
     "vix": {
-      "value": "16.4",
-      "date": "2026-10-01",
-      "stress": false
-    },
-    "vstoxx": {
-      "value": "13.7",
+      "value": "15.3",
       "date": "2026-10-02",
       "stress": false
     },
+    "vstoxx": {
+      "value": "13.4",
+      "date": "2026-10-05",
+      "stress": false
+    },
     "hy": {
-      "value": "3.12%",
-      "date": "2026-09-30",
+      "value": "3.10%",
+      "date": "2026-10-02",
       "stress": false
     },
     "pc": {
