@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-13",
+  "date": "2026-10-14",
   "scoreUS": 75,
   "scoreEU": 66,
   "zoneUS": "Euphorie",
@@ -28,7 +28,7 @@
     {
       "name": "Momentum S&P/MA125",
       "score": 56,
-      "raw": "+3.6%"
+      "raw": "+3.7%"
     }
   ],
   "pillarsEU": [
@@ -45,17 +45,17 @@
     {
       "name": "Breadth SX5E/MA125",
       "score": 49,
-      "raw": "-0.8%"
+      "raw": "-0.6%"
     },
     {
       "name": "Stress crédit iTraxx",
       "score": 96,
-      "raw": "2.35%"
+      "raw": "2.34%"
     },
     {
       "name": "Momentum SX5E/MA125",
       "score": 49,
-      "raw": "-0.8%"
+      "raw": "-0.6%"
     }
   ],
   "kpis": {
@@ -66,12 +66,12 @@
     },
     "vstoxx": {
       "value": "13.0",
-      "date": "2026-10-13",
+      "date": "2026-10-14",
       "stress": false
     },
     "hy": {
       "value": "3.11%",
-      "date": "2026-10-09",
+      "date": "2026-10-12",
       "stress": false
     },
     "pc": {
